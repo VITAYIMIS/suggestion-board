@@ -65,14 +65,55 @@
 
                 <form onsubmit="event.preventDefault(); alert('模拟提交成功！请前往公示区或后台查看。');">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label class="block text-gray-700 font-bold mb-2">问题分类</label>
-                            <select class="w-full border rounded-lg p-3 bg-gray-50">
-                                <option>后勤保障 (食堂/宿舍/维修)</option>
-                                <option>教学教务 (课程/图书馆)</option>
-                                <option>权益维护</option>
-                                <option>活动建议</option>
-                            </select>
+                        <div id="view-submit" class="hidden">
+    <div class="bg-white rounded-xl shadow-lg p-8 max-w-3xl mx-auto border-t-4 border-blue-500">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">发起一个新的提案</h2>
+        
+        <form id="submission-form" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSek5RuI8EtXngkxOp1636_d3yJz_aSZxLRu0G7_VE2KOwi6pA/formResponse" target="no-target" method="POST">
+            
+            <div class="mb-4 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm border border-yellow-200">
+                <i class="fa-solid fa-circle-info mr-1"></i> 温馨提示：为了提高解决效率，建议先在公示区搜索相似问题并点击“附议”。
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2">问题分类</label>
+                    <select class="w-full border rounded-lg p-3 bg-gray-50" name="entry.1486641009">
+                        <option value="后勤保障">后勤保障 (食堂/宿舍/维修)</option>
+                        <option value="教学教务">教学教务 (课程/图书馆)</option>
+                        <option value="生活权益">生活权益</option>
+                        <option value="活动建议">活动建议</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2">涉及地点</label>
+                    <input type="text" class="w-full border rounded-lg p-3 bg-gray-50" placeholder="例如：三食堂二楼" name="entry.71230980">
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">详细描述</label>
+                <textarea class="w-full border rounded-lg p-3 bg-gray-50 h-32" placeholder="请详细描述客观事实..." name="entry.1804237831" required></textarea>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2 text-blue-600">💡 你的建议方案 (核心)</label>
+                <textarea class="w-full border border-blue-200 rounded-lg p-3 bg-blue-50 h-24" placeholder="如果我是管理者，我会怎么做？" name="entry.1729297281" required></textarea>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">联系方式</label>
+                <input type="text" class="w-full border rounded-lg p-3 bg-gray-50" placeholder="手机号/微信号 (可选)" name="entry.1784523966">
+            </div>
+
+            <div class="flex justify-between items-center">
+                <iframe name="no-target" id="no-target" style="display:none;"></iframe>
+                <button type="submit" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 shadow-md">提交审核</button>
+            </div>
+        </form>
+    </div>
+</div>
                         </div>
                         <div>
                             <label class="block text-gray-700 font-bold mb-2">涉及地点</label>
@@ -291,6 +332,35 @@
 
         // 初始化
         render();
+// ... 在你的文件底部，找到类似以下的代码段：
+
+    // 初始化
+    render(); 
+
+    // ********** 请将以下代码粘贴到上一行 render(); 之后 **********
+    
+    document.getElementById('submission-form').addEventListener('submit', function(e) {
+        // 阻止默认的表单提交，让数据发送到隐藏的 iframe 中
+        e.preventDefault();
+
+        // 手动提交表单到 Google Forms
+        fetch(this.action, {
+            method: this.method,
+            body: new FormData(this),
+            mode: 'no-cors' // 关键：让浏览器不检查跨域问题
+        }).then(() => {
+            // 提交成功后的反馈和清空
+            alert('🎉 提案提交成功！您的意见已发送至学生会数据后台。请等待审核和公示。');
+            this.reset(); // 清空表单内容
+            switchTab('public'); // 自动切换回公示页面
+        }).catch(error => {
+            // 提交失败的反馈
+            alert('❌ 提交失败：请检查网络连接或联系技术支持。');
+            console.error('Submission Error:', error);
+        });
+    });
+
+    // ... （最后是 </script> 标签和 </body> </html> 结束标签）
     </script>
 </body>
 </html>
