@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>倾听建言 - 校园项目化提案系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+        .hidden { display: none; }
+        .active-tab { border-bottom: 3px solid #3b82f6; color: #1d4ed8; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <nav class="bg-white shadow-md fixed w-full z-10 top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-bullhorn text-blue-600 text-2xl mr-2"></i>
+                    <span class="font-bold text-xl text-gray-800">倾听建言</span>
+                </div>
+                <div class="flex items-center space-x-8">
+                    <button onclick="switchTab('public')" id="btn-public" class="h-16 px-2 active-tab flex items-center">
+                        <i class="fa-solid fa-users-viewfinder mr-2"></i> 公示与追踪 (中台)
+                    </button>
+                    <button onclick="switchTab('submit')" id="btn-submit" class="h-16 px-2 text-gray-500 hover:text-blue-600 flex items-center">
+                        <i class="fa-solid fa-pen-to-square mr-2"></i> 我要建言 (前台)
+                    </button>
+                    <button onclick="switchTab('admin')" id="btn-admin" class="h-16 px-2 text-gray-500 hover:text-blue-600 flex items-center">
+                        <i class="fa-solid fa-screwdriver-wrench mr-2"></i> 工作台账 (后台)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto mt-24 px-4 pb-12">
+
+        <div id="view-public">
+            <div class="bg-blue-600 rounded-xl p-8 text-white mb-8 shadow-lg">
+                <h1 class="text-3xl font-bold mb-4">你的声音，正在改变校园</h1>
+                <div class="flex gap-4">
+                    <input type="text" placeholder="在提交前，请先搜索是否已有相关提案..." class="w-full p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                    <button class="bg-yellow-400 text-blue-900 font-bold px-6 py-3 rounded-lg hover:bg-yellow-300">搜索</button>
+                </div>
+                <div class="mt-4 text-sm opacity-90">
+                    🔥 热门议题： <span class="underline cursor-pointer ml-2">图书馆空调温度</span> <span class="underline cursor-pointer ml-2">西区食堂物价</span> <span class="underline cursor-pointer ml-2">宿舍门禁延长</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="public-cards">
+                </div>
+        </div>
+
+        <div id="view-submit" class="hidden">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-3xl mx-auto border-t-4 border-blue-500">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">发起一个新的提案</h2>
+                
+                <div class="mb-4 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm border border-yellow-200">
+                    <i class="fa-solid fa-circle-info mr-1"></i> 温馨提示：为了提高解决效率，建议先在公示区搜索相似问题并点击“附议”。
+                </div>
+
+                <form onsubmit="event.preventDefault(); alert('模拟提交成功！请前往公示区或后台查看。');">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">问题分类</label>
+                            <select class="w-full border rounded-lg p-3 bg-gray-50">
+                                <option>后勤保障 (食堂/宿舍/维修)</option>
+                                <option>教学教务 (课程/图书馆)</option>
+                                <option>权益维护</option>
+                                <option>活动建议</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">涉及地点</label>
+                            <input type="text" class="w-full border rounded-lg p-3 bg-gray-50" placeholder="例如：三食堂二楼">
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-bold mb-2">详细描述</label>
+                        <textarea class="w-full border rounded-lg p-3 bg-gray-50 h-32" placeholder="请详细描述客观事实..."></textarea>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-bold mb-2 text-blue-600">💡 你的建议方案 (核心)</label>
+                        <textarea class="w-full border border-blue-200 rounded-lg p-3 bg-blue-50 h-24" placeholder="如果由你来解决，你会怎么做？"></textarea>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 shadow-md">提交审核</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="view-admin" class="hidden">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                    <h2 class="text-xl font-bold text-gray-800">📋 工作台账与跟进</h2>
+                    <div class="flex space-space-x-2">
+                        <button class="bg-white border border-gray-300 px-3 py-1 rounded text-sm">导出周报</button>
+                        <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm">新建任务</button>
+                    </div>
+                </div>
+                
+                <table class="min-w-full text-left text-sm">
+                    <thead class="bg-gray-100 text-gray-600 uppercase">
+                        <tr>
+                            <th class="px-6 py-3">ID</th>
+                            <th class="px-6 py-3">分类</th>
+                            <th class="px-6 py-3">提案内容</th>
+                            <th class="px-6 py-3">状态/进度</th>
+                            <th class="px-6 py-3">责任人</th>
+                            <th class="px-6 py-3">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200" id="admin-table">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 模拟数据库数据
+        const data = [
+            {
+                id: "P-2023001",
+                category: "后勤保障",
+                title: "图书馆三楼西侧空调制冷效果差",
+                status: "processing", // pending, accepted, processing, completed, rejected
+                progress: 60,
+                location: "图书馆",
+                solution: "建议清洗滤网或加氟",
+                reply: "已联系维保单位，预计周五前完成清洗。",
+                groupLink: "#",
+                likes: 45
+            },
+            {
+                id: "P-2023002",
+                category: "教学教务",
+                title: "建议延长期末周自习室开放时间",
+                status: "completed",
+                progress: 100,
+                location: "全校",
+                solution: "通宵开放",
+                reply: "经协调，考前两周A楼开放至24:00。",
+                groupLink: "#",
+                likes: 128
+            },
+            {
+                id: "P-2023003",
+                category: "生活权益",
+                title: "要求给每间宿舍安装私人洗衣机",
+                status: "rejected",
+                progress: 0,
+                location: "宿舍区",
+                solution: "学校出资购买",
+                reply: "驳回：受限于宿舍水电线路负荷及排污管道设计，无法安装。建议使用公共洗衣房。",
+                groupLink: "",
+                likes: 12
+            },
+            {
+                id: "P-2023004",
+                category: "活动建议",
+                title: "草地音乐节场地申请",
+                status: "accepted",
+                progress: 20,
+                location: "南操场",
+                solution: "需解决噪音审批",
+                reply: "已立项，正在对接保卫处审批。",
+                groupLink: "#",
+                likes: 8
+            }
+        ];
+
+        // 渲染函数
+        function render() {
+            const publicContainer = document.getElementById('public-cards');
+            const adminContainer = document.getElementById('admin-table');
+            
+            publicContainer.innerHTML = '';
+            adminContainer.innerHTML = '';
+
+            data.forEach(item => {
+                // 1. 渲染中台卡片
+                let statusBadge = '';
+                let progressBarColor = 'bg-blue-600';
+                let cardBorder = '';
+                
+                if(item.status === 'completed') {
+                    statusBadge = '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">✅ 已解决</span>';
+                    progressBarColor = 'bg-green-500';
+                    cardBorder = 'border-green-500';
+                } else if (item.status === 'processing') {
+                    statusBadge = '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">🔄 推进中</span>';
+                } else if (item.status === 'rejected') {
+                    statusBadge = '<span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">❌ 未采纳</span>';
+                    progressBarColor = 'bg-red-500';
+                    cardBorder = 'border-red-400 opacity-75';
+                } else {
+                    statusBadge = '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">⏳ 待立项</span>';
+                    progressBarColor = 'bg-yellow-500';
+                }
+
+                // 社群链接按钮逻辑
+                const groupBtn = item.groupLink && item.status !== 'rejected' && item.status !== 'completed' 
+                    ? `<button class="text-xs flex items-center text-blue-600 font-bold hover:underline"><i class="fa-brands fa-weixin mr-1"></i> 进群跟进</button>` 
+                    : '';
+
+                const publicCard = `
+                    <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition border-l-4 ${cardBorder || 'border-blue-500'}">
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-xs text-gray-500 font-mono">${item.id}</span>
+                            ${statusBadge}
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-800 mb-2">${item.title}</h3>
+                        <div class="text-sm text-gray-600 mb-4">
+                            <i class="fa-solid fa-location-dot mr-1"></i> ${item.location}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>进度追踪</span>
+                                <span>${item.progress}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="h-2 rounded-full ${progressBarColor}" style="width: ${item.progress}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-3 rounded text-sm text-gray-700 mb-3 text-xs">
+                            <span class="font-bold">官方回复：</span> ${item.reply || '暂无最新回复'}
+                        </div>
+
+                        <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                            <div class="flex space-x-3 text-gray-500 text-sm">
+                                <span class="cursor-pointer hover:text-blue-600"><i class="fa-regular fa-thumbs-up"></i> ${item.likes} 附议</span>
+                            </div>
+                            ${groupBtn}
+                        </div>
+                    </div>
+                `;
+                publicContainer.innerHTML += publicCard;
+
+                // 2. 渲染后台表格行
+                const adminRow = `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-mono text-gray-500">${item.id}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 bg-gray-100 rounded text-xs">${item.category}</span></td>
+                        <td class="px-6 py-4 font-medium text-gray-900">${item.title}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                <span class="w-2 h-2 rounded-full ${item.status === 'processing' ? 'bg-blue-500' : (item.status === 'completed' ? 'bg-green-500' : 'bg-red-500')} mr-2"></span>
+                                ${item.status}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-500">权益部-张三</td>
+                        <td class="px-6 py-4">
+                            <button class="text-blue-600 hover:text-blue-900 text-xs font-bold mr-2">更新进度</button>
+                            <button class="text-red-600 hover:text-red-900 text-xs">驳回</button>
+                        </td>
+                    </tr>
+                `;
+                adminContainer.innerHTML += adminRow;
+            });
+        }
+
+        // 切换标签页逻辑
+        function switchTab(tabName) {
+            // 隐藏所有视图
+            ['public', 'submit', 'admin'].forEach(view => {
+                document.getElementById('view-' + view).classList.add('hidden');
+                document.getElementById('btn-' + view).classList.remove('active-tab', 'text-blue-600');
+                document.getElementById('btn-' + view).classList.add('text-gray-500');
+            });
+
+            // 显示选中视图
+            document.getElementById('view-' + tabName).classList.remove('hidden');
+            
+            // 样式激活
+            const btn = document.getElementById('btn-' + tabName);
+            btn.classList.add('active-tab');
+            btn.classList.remove('text-gray-500');
+        }
+
+        // 初始化
+        render();
+    </script>
+</body>
+</html>
